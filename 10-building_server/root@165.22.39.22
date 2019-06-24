@@ -1,0 +1,91 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[1]:
+
+
+# Using APIs/Data Structures
+# Using the Dark Sky Forecast API at https://developer.forecast.io/, generate a sentence that describes the weather that day.
+
+# Right now it is TEMPERATURE degrees out and SUMMARY. Today will be TEMP_FEELING with a high of HIGH_TEMP and a low of LOW_TEMP. RAIN_WARNING.
+
+# TEMPERATURE is the current temperature
+# SUMMARY is what it currently looks like (partly cloudy, etc - it's "summary" in the dictionary). Lowercase, please.
+# TEMP_FEELING is whether it will be hot, warm, cold, or moderate. You will probably use HIGH_TEMP and your own thoughts and feelings to determine this.
+# HIGH_TEMP is the high temperature for the day.
+# LOW_TEMP is the low temperature for the day.
+# RAIN_WARNING is something like "bring your umbrella!" if it is going to rain at some point during the day.
+
+
+# In[2]:
+
+
+import requests
+from bs4 import BeautifulSoup
+import dotenv
+import datetime
+
+
+# In[3]:
+
+
+get_ipython().system('touch .env')
+
+
+# In[4]:
+
+
+from dotenv import load_dotenv
+load_dotenv()
+import os
+
+API_KEY = os.getenv("DARKSKY_API_KEY")
+
+
+# In[5]:
+
+
+response = requests.get(f'https://api.darksky.net/forecast/{API_KEY}/40.7128,-74.0060?units=si')
+new_york_weather = response.json()
+
+
+# In[6]:
+
+
+new_york_weather.keys()
+
+
+# In[7]:
+
+
+currently  = new_york_weather['currently']
+today = new_york_weather['daily']['data'][0]
+
+TEMPERATURE = currently['temperature']
+SUMMARY = currently['summary'].lower()
+HIGH_TEMP = today['temperatureHigh']
+LOW_TEMP = today['temperatureLow']
+
+if HIGH_TEMP > 30:
+    TEMP_FEELING = 'hot'
+elif HIGH_TEMP > 25:
+    TEMP_FEELING = 'warm'
+elif HIGH_TEMP > 15:
+    TEMP_FEELING = 'moderate'
+else:
+    TEMP_FEELING = 'cold'
+
+if today['icon'] == 'rain':
+    RAIN_WARNING = 'bring your umbralla'
+else:
+    RAIN_WARNING = ''
+    
+print(f'Right now it is {TEMPERATURE} degrees out and {SUMMARY}. Today will be {TEMP_FEELING} with a high of {HIGH_TEMP} and a low of {LOW_TEMP}. {RAIN_WARNING}.')
+    
+
+
+# In[ ]:
+
+
+
+
